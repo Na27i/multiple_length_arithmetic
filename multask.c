@@ -3,7 +3,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
-#define KETA  251
+#define KETA  256
 #define RADIX 10000
 
 struct timeval tv;
@@ -42,11 +42,11 @@ int isZero(NUMBER *a){
 //   a： 表示したい多倍長変数
 void dispNumber(NUMBER *a){
 	int i;
+	printf(" ans = %d.\n", a->n[KETA-1]);
 
-	printf("ans = %04d.\n", a->n[KETA-1]);
-	for(i = KETA - 2; i >= 0; i--)
+	for(i = 1; i <= 250; i++)
 	{
-		printf(" %04d", a->n[i]);
+		printf(" %04d", a->n[KETA-i-1]);
 	}
 }
 
@@ -305,12 +305,12 @@ int main(void)
 	gettimeofday(&tv, NULL);
 	tstart = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
 
-	NUMBER a, b;     // フィボナッチ係数を格納
-	NUMBER shiftB;   // シフトさせたbを格納  
-	NUMBER amari;    // 余りを格納
-	NUMBER div;      // 商を格納
-	NUMBER ans;      // 逆数和を格納
-	NUMBER temp;     // 値の保持用
+	NUMBER a, b;       // フィボナッチ係数を格納
+	NUMBER shiftOne;   // シフト後の 1 を格納  
+	NUMBER amari;      // 余りを格納
+	NUMBER div;        // 商を格納
+	NUMBER ans;        // 逆数和を格納
+	NUMBER temp;       // 値の保持用
 
 	int i;
 	int count = 0;
@@ -323,16 +323,16 @@ int main(void)
 	setInt(&b, 1);
 
 	// 割る数を最大桁までシフト
-	setInt(&c, 1);
-	for(i = 0; i < KETA * 4 - 1; i++)
+	setInt(&shiftOne, 1);
+	for(i = 0; i < 1020; i++)
 	{
-		mulBy10(&c);
+		mulBy10(&shiftOne);
 	}
 
 	// 計
 	while(1)
 	{
-		divide(&c, &a, &div, &amari );
+		divide(&shiftOne, &a, &div, &amari );
 
 		add(&ans, &div, &temp);
 		copyNumber(&temp, &ans);
@@ -344,15 +344,18 @@ int main(void)
 			break;
 		if(count % 50 == 0){
 			dispNumber(&ans);
+
 			gettimeofday(&tv, NULL);
 			tend = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
 			printf("[%f s], i = %d\n", tend - tstart, count);
 		}
 	}
 
+	dispNumber(&ans);
+
 	gettimeofday(&tv, NULL);
 	tend = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
-	dispNumber(&ans);
 	printf("[%f s], i = %d\n", tend -tstart, count);
+
 	return 0;
 }
